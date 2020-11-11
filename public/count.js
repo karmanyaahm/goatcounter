@@ -15,7 +15,6 @@
 			p: (vars.path     === undefined ? goatcounter.path     : vars.path),
 			r: (vars.referrer === undefined ? goatcounter.referrer : vars.referrer),
 			t: (vars.title    === undefined ? goatcounter.title    : vars.title),
-			x: (vars.error_callback    === undefined ? goatcounter.error_callback    : vars.error_callback),
 			e: !!(vars.event || goatcounter.event),
 			s: [window.screen.width, window.screen.height, (window.devicePixelRatio || 1)],
 			b: is_bot(),
@@ -131,14 +130,15 @@
 		if (!url)
 			return warn('not counting because path callback returned null')
 
+		var img_attr = vars.img_attr || {}
+
 		var img = document.createElement('img')
 		img.src = url
 		img.style.position = 'absolute'  // Affect layout less.
 		img.setAttribute('alt', '')
 		img.setAttribute('aria-hidden', 'true')
-		img.onerror = function(){
-			get_data(vars||{}).x()
-		}
+		for (var k in img_attr)
+		img.setAttribute(k, img_attr[k])
 
 		var rm = function() { if (img && img.parentNode) img.parentNode.removeChild(img) }
 		setTimeout(rm, 3000)  // In case the onload isn't triggered.
